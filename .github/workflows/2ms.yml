@@ -1,24 +1,36 @@
 name: secret-scan
+
 on:
   workflow_dispatch:
-  pull_request:
-  push:
-    branches: [main]
 
 jobs:
   scan:
+    name: 2MS Secret Scan
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Run 2ms
+
+      - name: Run 2MS
         run: |
-          docker run --rm -v "$PWD":/repo checkmarx/2ms \
-            git /repo --stdout-format sarif \
+          mkdir -p artifacts
+
+          docker run --rm \
+            -v "$PWD":/repo \
+            checkmarx/2ms:latest \
+            git /repo \
+            --stdout-format sarif \
             --report-path /repo/artifacts/2ms.sarif \
             --ignore-on-exit results
-      - name: Upload SARIF
+
+      - name: Upload 2MS SARIF
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: artifacts/2ms.sarif

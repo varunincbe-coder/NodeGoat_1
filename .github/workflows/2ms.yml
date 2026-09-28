@@ -24,7 +24,7 @@ jobs:
 
           docker run --rm \
             -v "$PWD":/repo \
-            checkmarx/2ms:latest \
+            varunincbe-coder/2ms-updated_1:latest \
             git /repo \
             --stdout-format sarif \
             --report-path /repo/artifacts/2ms.sarif \
